@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZRBT9DCW3F"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZRBT9DCW3F');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <!-- <script src="http://popcornjs.org/code/dist/popcorn-complete.js"></script> -->
+</head>
+<body>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title" style="font-size:28px;">KITchen: A Real-World Benchmark and Dataset for 6D Object Pose Estimation in Kitchen Environments</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://h2t.iar.kit.edu/english/21_2748.php">Abdelrahman Younes</a></sup>,
+              <a href="https://h2t.iar.kit.edu/english/21_2372.php">Tamim Asfour</a></sup>
+            </span>
+          </div>
+          <br>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"></sup>KIT</span>
+          </div>
+ <img src="static/images/Logo_KIT.png" style="max-height: 150px">
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://abdelrahmanyounes.github.io/KITchen/" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <!-- <span class="link-block">
+                <a href="" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span> -->
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/AbdelrahmanYounes/KITchen" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-nine-tenths">
+
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>Despite the recent progress on 6D object pose
+estimation methods for robotic grasping, a substantial perfor-
+mance gap persists between the capabilities of these methods
+on existing datasets and their efficacy in real-world mobile
+manipulation tasks, particularly when robots rely solely on their
+monocular egocentric field of view (FOV). Existing real-world
+datasets primarily focus on table-top grasping scenarios, where
+a robotic arm is placed in a fixed position and the objects are
+centralized within the FOV of fixed external camera(s). Assess-
+ing performance on such datasets may not accurately reflect
+the challenges encountered in everyday mobile manipulation
+tasks within kitchen environments such as retrieving objects
+from higher shelves, sinks, dishwashers, ovens, refrigerators, or
+microwaves. To address this gap, we present Kitchen, a novel
+benchmark designed specifically for estimating the 6D poses of
+objects located in diverse positions within kitchen settings. For
+this purpose, we recorded a comprehensive dataset comprising
+around 205k real-world RGBD images for 111 kitchen objects
+captured in two distinct kitchens, utilizing one humanoid robot
+with its egocentric perspectives. Subsequently, we developed a
+semi-automated annotation pipeline, to streamline the labeling
+process of such datasets, resulting in the generation of 2D object
+labels, 2D object segmentation masks, and 6D object poses with
+minimized human effort. The benchmark, the dataset, and the
+annotation pipeline will be publicly available upon acceptance.
+          </p>
+          	</div>
+	<div class="content is-centered has-text-centered">
+        <img src="static/images/Kitchen_locations.png" width="100%">
+      </div>
+  <br>
+<br>
+    <div class="columns is-centered has-text-centered">
+      <div class="content is-nine-tenths">
+        <h2 class="title is-3">Annotation Pipeline</h2>
+        <div class="content has-text-justified">
+          <p>Annotating objects with their ground truth 6D poses is a labor-intensive and time-consuming task. To streamline this process, we propose a semi-automated annotation pipeline. The pipeline begins with inputting 3D meshes of dataset objects, which BlenderProc2 processes to generate synthetic data with 2D bounding boxes. This annotated 2D data is utilized to train a YOLOv5 2D object detector. Subsequently, real-world recorded data is fed into the trained model, and the output undergoes manual inspection for correct and incorrect labeling. The correctly labeled images are employed for model refinement, which is then validated on the incorrectly labeled ones. This iterative process continues until all images are accurately labeled. The images with correct labels are then passed to Segment Anything (SAM) to produce masks. Finally, the images, along with the 2D labels and 3D meshes, are input into MegaPose to generate 6D poses for detected objects. Manual inspection of poses is conducted through contour and mesh overlay images, and corrected annotations are used to fine-tune MegaPose iteratively until the entire dataset is accurately annotated.
+          </p>
+          
+        </div>
+        	<div class="content is-centered has-text-centered">
+        <img src="static/images/AnnotationPipelineFinal.png" width="100%">
+      </div>
+
+    </div>
+
+    <br>
+    <br>
+
+  </div>
+
+</section>
+
+      
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-nine-tenths">
+
+        <h2 class="title is-3">Annotated Data Examples</h2>
+        <div class="content has-text-justified">
+          <p>
+          </p>
+                  </div>
+	<div class="content is-centered has-text-centered">
+        <img class="image-no-space" src="static/images/annotation_4rows.png" width="100%">
+        <img class="image-no-space" src="static/images/annotation_7.png" width="100%">
+      </div>
+
+  </div>
+
+</section>      
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{younes2024,
+  author    = {Younes, Abdelrahman and Asfour, Tamim},
+  title     = {KITchen: A Real-World Benchmark and Dataset for 6D Object Pose Estimation in Kitchen Environments},
+  journal   = {arxiv},
+  year      = {2024},
+}</code></pre>
+  </div>
+</section>
+<style>
+model-viewer {
+  width: 400px;
+  height: 300px;
+}
+</style>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            Website is adapted from
+              <a href="https://github.com/nerfies/nerfies.github.io">here</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
