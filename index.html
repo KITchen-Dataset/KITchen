@@ -46,7 +46,7 @@
           <h1 class="title is-1 publication-title" style="font-size:28px;">KITchen: A Real-World Benchmark and Dataset for 6D Object Pose Estimation in Kitchen Environments</h1>
           <div class="is-size-5 publication-authors">
             <span class="author-block">
-              <a href="https://h2t.iar.kit.edu/english/21_2748.php">Abdelrahman Younes</a></sup>,
+              <a href="https://www.linkedin.com/in/abdelrahmanyounes/">Abdelrahman Younes</a></sup>,
               <a href="https://h2t.iar.kit.edu/english/21_2372.php">Tamim Asfour</a></sup>
             </span>
           </div>
@@ -54,40 +54,47 @@
 
           <div class="is-size-5 publication-authors">
             <span class="author-block"></sup>KIT</span>
-
           </div>
- <img src="static/images/Logo_KIT.jpg" style="max-height: 150px">
+ <img src="static/images/Logo_KIT.png" style="max-height: 150px">
           <div class="column has-text-centered">
             <div class="publication-links">
               <!-- PDF Link. -->
               <span class="link-block">
-                <a href="https://kitchen-dataset.github.io/KITchen/" class="external-link button is-normal is-rounded is-dark">
+                <a href="https://abdelrahmanyounes.github.io/KITchen/" class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fas fa-file-pdf"></i>
                   </span>
                   <span>Paper</span>
                 </a>
               </span>
-              <!-- Video Link. -->
-              <!-- <span class="link-block">
-                <a href="" class="external-link button is-normal is-rounded is-dark">
+              <!-- Dataset Link. -->
+              <span class="link-block">
+                <a href="https://drive.google.com/drive/folders/1K38tgvQN_yl9MOdF1MlKL9oJVHQyFkyC?usp=drive_link" class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
-                      <i class="fab fa-youtube"></i>
+                      <i class="fas fa-database"></i>
                   </span>
-                  <span>Video</span>
+                  <span>Dataset</span>
                 </a>
-              </span> -->
+              </span>
               <!-- Code Link. -->
               <span class="link-block">
-                <a href="https://github.com/KITchen-Dataset/KITchen" class="external-link button is-normal is-rounded is-dark">
+                <a href="https://github.com/AbdelrahmanYounes/KITchen" class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fab fa-github"></i>
                   </span>
                   <span>Code</span>
                   </a>
               </span>
+              <!-- Email Link. -->
+              <span class="link-block">
+                <a href="mailto:kitchendataset@gmail.com" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-envelope"></i>
+                  </span>
+                  <span>Inquiries</span>
+                </a>
+              </span>
             </div>
-
           </div>
         </div>
       </div>
@@ -103,7 +110,7 @@
 
     <!-- Abstract. -->
     <div class="columns is-centered has-text-centered">
-      <div class="column is-nine-tenths">
+      <div class="column is-four-fifths">
 
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
@@ -134,16 +141,13 @@ minimized human effort. The benchmark, the dataset, and the
 annotation pipeline will be publicly available upon acceptance.
           </p>
           	</div>
-    	<video style="text-align:center; width:100%" id="v3" playsinline controls height="100%">
-          <source src="static/videos/KITchen.mp4" type="video/mp4">
-        </video>
 	<div class="content is-centered has-text-centered">
-        
+        <img src="static/images/Kitchen_locations.png" width="100%">
       </div>
   <br>
 <br>
     <div class="columns is-centered has-text-centered">
-      <div class="content is-nine-tenths">
+      <div class="content is-four-fifths">
         <h2 class="title is-3">Annotation Pipeline</h2>
         <div class="content has-text-justified">
           <p>Annotating objects with their ground truth 6D poses is a labor-intensive and time-consuming task. To streamline this process, we propose a semi-automated annotation pipeline. The pipeline begins with inputting 3D meshes of dataset objects, which BlenderProc2 processes to generate synthetic data with 2D bounding boxes. This annotated 2D data is utilized to train a YOLOv5 2D object detector. Subsequently, real-world recorded data is fed into the trained model, and the output undergoes manual inspection for correct and incorrect labeling. The correctly labeled images are employed for model refinement, which is then validated on the incorrectly labeled ones. This iterative process continues until all images are accurately labeled. The images with correct labels are then passed to Segment Anything (SAM) to produce masks. Finally, the images, along with the 2D labels and 3D meshes, are input into MegaPose to generate 6D poses for detected objects. Manual inspection of poses is conducted through contour and mesh overlay images, and corrected annotations are used to fine-tune MegaPose iteratively until the entire dataset is accurately annotated.
@@ -160,28 +164,7 @@ annotation pipeline will be publicly available upon acceptance.
     <br>
 
   </div>
-     
-  <br>
-<br>
-    <div class="columns is-centered has-text-centered">
-      <div class="content is-nine-tenths">
-        <h2 class="title is-3">Comparison to Existing Datasets</h2>
-        <div class="content has-text-justified">
-          <p>When compared to currently available datasets, the KITchen dataset stands out in several key aspects. With a diverse collection of 111 objects, our dataset offers a significantly wider range than the average number of objects found in existing datasets, surpassing the average by a factor of four. This expansive variety is crucial for training robust pose estimation models capable of handling a multitude of real-world scenarios. Moreover, the KITchen dataset offers a total of 205K RGBD images. This surpasses the average number of annotated images in existing datasets by over threefold, providing more data for training and evaluation purposes. Furthermore, our dataset has a remarkably larger number of annotated objects per image compared to the existing datasets with an unprecedented number of objects reaching 50 per image. This exceeds any available dataset by a significant margin, enabling more comprehensive analysis and training of instance-level 6D pose estimation models. Additionally, the KITchen dataset is unique in its capture methodology. It is the only dataset to have been recorded using the field of view of a humanoid robot with adjustable heights, camera angles, and lighting conditions. Unlike existing datasets that predominantly focus on tabletop scenes, our dataset features challenging locations within kitchen environments including refrigerators, ovens, sinks, higher shelves, microwaves, and 
-dishwashers, offering a broader scope of real-world scenarios for pose estimation research. 
-          </p>
-          
-        </div>
-        	<div class="content is-centered has-text-centered">
-        <img src="static/images/KITchen_table.png" width="100%">
-      </div>
 
-    </div>
-
-    <br>
-    <br>
-
-  </div>
 </section>
 
       
@@ -192,7 +175,7 @@ dishwashers, offering a broader scope of real-world scenarios for pose estimatio
 
     <!-- Abstract. -->
     <div class="columns is-centered has-text-centered">
-      <div class="column is-nine-tenths">
+      <div class="column is-four-fifths">
 
         <h2 class="title is-3">Annotated Data Examples</h2>
         <div class="content has-text-justified">
@@ -211,12 +194,15 @@ dishwashers, offering a broader scope of real-world scenarios for pose estimatio
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@article{younes2024,
-  author    = {Younes, Abdelrahman and Asfour, Tamim},
-  title     = {KITchen: A Real-World Benchmark and Dataset for 6D Object Pose Estimation in Kitchen Environments},
-  journal   = {arxiv},
-  year      = {2024},
-}</code></pre>
+    <pre><code>@inproceedings{younes2024kitchen,
+      title={Kitchen: A real-world benchmark and dataset for 6d object pose estimation in kitchen environments},
+      author={Younes, Abdelrahman and Asfour, Tamim},
+      booktitle={2024 IEEE-RAS 23rd International Conference on Humanoid Robots (Humanoids)},
+      pages={803--810},
+      year={2024},
+      organization={IEEE}
+    }
+    </code></pre>
   </div>
 </section>
 <style>
