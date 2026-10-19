@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Explore KITchen</title>
+  <meta name="description" content="KITchen is a real-world RGB-D benchmark for 6D object pose estimation from a humanoid robot's egocentric view: 3.03M annotated objects, 111 object models, two kitchens.">
+  <meta property="og:title" content="Explore the KITchen dataset">
+  <meta property="og:description" content="3.03 million annotated objects seen from a humanoid robot's head camera, with boxes, masks and 6D poses, plus textured 3D models of 111 kitchen objects.">
+  <meta property="og:image" content="https://kitchen-dataset.github.io/KITchen/static/samples/016892.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2300876c'/%3E%3Cpath d='M18 46V18h7v11l11-11h9L32 31l14 15h-9l-12-13v13z' fill='white'/%3E%3C/svg%3E">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZRBT9DCW3F"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ZRBT9DCW3F');
+  </script>
+
+  <script>
+    // Apply the saved theme before first paint to avoid a flash.
+    try { const t = localStorage.getItem('kitchen-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/site.css">
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" defer></script>
+  <script src="./static/js/site.js" defer></script>
+</head>
+<body>
+
+<header class="nav" id="top">
+  <div class="nav-inner">
+    <a class="brand" href="./" aria-label="KITchen home"><span class="brand-mark">K</span>KITchen</a>
+    <nav class="nav-links" aria-label="Pages and sections">
+      <a href="./">Home</a>
+      <a href="#explorer">Explorer</a>
+      <a href="#objects">Objects</a>
+      <a href="#statistics">Statistics</a>
+      <a href="#download">Download</a>
+    </nav>
+    <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch light or dark theme">
+      <svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+
+<!-- ───────────────────────── Intro ───────────────────────── -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">KITchen dataset explorer</p>
+      <h1>Explore the data</h1>
+      <p class="lede">Browse annotated scenes from the robot's head camera, inspect every object model in 3D, and see what the <strong>2D boxes, masks and 6D poses</strong> cover across the whole release.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#explorer">Open the explorer</a>
+        <a class="btn" href="./">Back to the project page</a>
+      </div>
+    </div>
+    <figure class="hero-visual" aria-label="Sample frames with 6D pose overlays">
+      <div class="hero-frame" id="hero-frame">
+        <img id="hero-a" alt="" src="static/samples/016892.jpg">
+        <img id="hero-b" alt="" class="hidden" src="static/samples/016892_pose.png">
+      </div>
+      <figcaption id="hero-caption">Train split · rendered 6D poses</figcaption>
+    </figure>
+  </div>
+
+  <div class="wrap">
+    <dl class="kpis" id="kpis">
+      <div class="kpi"><dt>Annotated objects</dt><dd data-k="objects">3,034,854</dd></div>
+      <div class="kpi" title="Labels confirmed by a second detector"><dt>Confident labels</dt><dd data-k="confident">2,901,857</dd></div>
+      <div class="kpi"><dt>6D poses</dt><dd data-k="poses">2,469,725</dd></div>
+      <div class="kpi"><dt>Object models</dt><dd>111</dd></div>
+      <div class="kpi"><dt>Objects per image</dt><dd data-k="objects_per_frame_mean">31.7</dd></div>
+      <div class="kpi"><dt>Kitchens</dt><dd>2</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ───────────────────────── Explorer ───────────────────────── -->
+<section class="section" id="explorer">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Interactive</p>
+      <h2>Dataset explorer</h2>
+      <p class="sub">Every object in these scenes comes with a bounding box, an instance mask, and a 6D pose, on top of completed depth. Toggle the layers, hover or tap any object, or pick another scene below.</p>
+    </div>
+
+    <div class="explorer">
+      <div class="stage-col">
+        <div class="toolbar" role="toolbar" aria-label="Layers">
+          <div class="seg" id="layer-toggles">
+            <button type="button" class="chip on" data-layer="masks" aria-pressed="true">Masks</button>
+            <button type="button" class="chip" data-layer="boxes" aria-pressed="false">Boxes</button>
+            <button type="button" class="chip" data-layer="pose" aria-pressed="false">6D poses</button>
+            <button type="button" class="chip" data-layer="cuboids" aria-pressed="false">3D boxes</button>
+            <button type="button" class="chip" data-layer="labels" aria-pressed="false">Labels</button>
+          </div>
+          <label class="blend">
+            <span>RGB</span>
+            <input type="range" id="depth-blend" min="0" max="100" value="0" aria-label="Blend between RGB and depth">
+            <span>Depth</span>
+          </label>
+        </div>
+        <div class="stage" id="stage">
+          <img id="st-rgb" alt="Sample RGB frame">
+          <img id="st-depth" alt="" aria-hidden="true">
+          <img id="st-pose" alt="" aria-hidden="true">
+          <svg id="st-svg" viewBox="0 0 1920 1080" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <div class="tip" id="st-tip" role="status"></div>
+          <div class="depth-legend" id="depth-legend"><span id="dl-near"></span><i></i><span id="dl-far"></span></div>
+        </div>
+        <div class="filmstrip" id="filmstrip" role="listbox" aria-label="Sample scenes"></div>
+      </div>
+      <aside class="panel" aria-label="Scene details">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title" id="fr-title">Frame</div>
+            <div class="panel-sub" id="fr-sub"></div>
+          </div>
+        </div>
+        <div class="mini-stats" id="fr-stats"></div>
+        <div class="obj-list-head"><span>Objects in this scene</span><span class="muted" id="fr-count"></span></div>
+        <ul class="obj-list" id="obj-list"></ul>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── Objects ───────────────────────── -->
+<section class="section alt" id="objects">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Textured 3D models</p>
+      <h2>Object library</h2>
+      <p class="sub">The <span id="lib-count">108</span> objects annotated at least 100 times: grocery packages, YCB objects, cups, utensils and cookware. Click one to inspect its mesh in 3D.</p>
+    </div>
+    <div class="filters">
+      <div class="seg" id="cat-filters" role="group" aria-label="Filter by category"></div>
+      <div class="filter-right">
+        <input type="search" id="obj-search" placeholder="Search objects" aria-label="Search objects">
+        <select id="obj-sort" aria-label="Sort objects">
+          <option value="instances">Most annotated</option>
+          <option value="name">Name A–Z</option>
+          <option value="dist">Closest to camera</option>
+        </select>
+      </div>
+    </div>
+    <div class="obj-grid" id="obj-grid"></div>
+    <div class="more-wrap"><button type="button" class="btn" id="obj-more">Show all objects</button></div>
+  </div>
+</section>
+
+<dialog class="modal" id="obj-modal" aria-labelledby="om-title">
+  <div class="modal-body">
+    <button class="icon-btn modal-close" type="button" id="om-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <div class="modal-grid">
+      <model-viewer id="om-viewer" camera-controls auto-rotate shadow-intensity="0.6" exposure="1.05" environment-image="neutral" interaction-prompt="none" alt="3D object model"></model-viewer>
+      <div class="modal-info">
+        <p class="eyebrow" id="om-cat"></p>
+        <h3 id="om-title"></h3>
+        <p class="muted mono" id="om-id"></p>
+        <dl class="om-stats" id="om-stats"></dl>
+        <p class="muted small">Drag to rotate, scroll to zoom. Meshes are simplified for the web; the dataset ships the full-resolution models.</p>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<!-- ───────────────────────── Statistics ───────────────────────── -->
+<section class="section" id="statistics">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">By the numbers</p>
+      <h2>Dataset statistics</h2>
+      <p class="sub">Computed from the release annotations. <span class="muted" id="stats-generated"></span></p>
+    </div>
+
+    <div class="card wide">
+      <div class="card-head">
+        <div>
+          <h3>Annotations per object class</h3>
+          <p class="muted small">All <span id="cls-count">108</span> classes with at least 100 annotations, sorted by count. Hover or tap a bar for details.</p>
+        </div>
+        <div class="seg small" id="cls-metric" role="group" aria-label="Metric">
+          <button type="button" class="chip on" data-m="instances" aria-pressed="true">2D instances</button>
+          <button type="button" class="chip" data-m="poses" aria-pressed="false">6D poses</button>
+        </div>
+      </div>
+      <div class="legend" id="cat-legend"></div>
+      <div class="chart" id="chart-classes"></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Objects per image</h3>
+        <p class="muted small">Cluttered scenes: half the images hold <span id="opf-median">…</span> or more annotated objects.</p>
+        <div class="chart" id="chart-opf"></div>
+      </div>
+      <div class="card">
+        <h3>Camera-to-object distance</h3>
+        <p class="muted small">Distance from the robot's head camera to each posed object.</p>
+        <div class="chart" id="chart-dist"></div>
+      </div>
+      <div class="card">
+        <h3>Object size in the image</h3>
+        <p class="muted small">Bounding-box area as a share of the 1920×1080 image. Most objects are small.</p>
+        <div class="chart" id="chart-area"></div>
+      </div>
+      <div class="card">
+        <h3>Where objects appear</h3>
+        <p class="muted small">Density of bounding-box centres across all annotated objects.</p>
+        <div class="chart heat" id="chart-heat"></div>
+      </div>
+    </div>
+
+    <div class="card wide">
+      <div class="card-head">
+        <div>
+          <h3>Along the recordings</h3>
+          <p class="muted small">Average annotated objects per image in recording order (smoothed). The strip above shows the benchmark split of each 250-frame block.</p>
+        </div>
+      </div>
+      <div class="legend" id="split-legend"></div>
+      <div class="chart" id="chart-timeline"></div>
+    </div>
+
+    <div class="card wide">
+      <h3>Benchmark splits</h3>
+      <p class="muted small">Consecutive frames are near-duplicates, so the benchmark assigns whole blocks of 250 frames to train, validation and test (70%, 10% and 20% of the blocks, fixed seed). The 25 train frames on each side of a validation or test block are left out so no near-duplicate crosses a split. Every 6th validation and test frame is scored.</p>
+      <div class="table-wrap">
+        <table class="tbl" id="seq-table">
+          <thead><tr><th>Split</th><th class="num">Objects</th><th class="num">Confident</th><th class="num">6D poses</th></tr></thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ───────────────────────── Download ───────────────────────── -->
+<section class="section" id="download">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Get the data</p>
+      <h2>Download &amp; format</h2>
+      <p class="sub">Four parts, each holding many recording sequences as one folder of images plus annotation files. Object <em>i</em> of an image is line <em>i</em> in <code>labels/</code>, <code>seg_labels/</code> and mask <code>obj&lt;i&gt;</code>.</p>
+    </div>
+    <div class="grid-2 align-start">
+      <div class="card">
+        <h3>What's inside</h3>
+        <ul class="ticks">
+          <li><b>RGB</b> 1920×1080 images from the robot's head camera</li>
+          <li><b>Depth</b> raw and completed, aligned to RGB</li>
+          <li><b>2D boxes</b> YOLO format, 112 class ids (111 objects plus "other")</li>
+          <li><b>Instance masks</b> one binary PNG per object, plus polygons</li>
+          <li><b>6D poses</b> BOP-style <code>scene_gt.json</code> per part</li>
+          <li><b>3D models</b> 111 textured meshes (<code>obj_XXXXXX.ply</code>)</li>
+          <li><b>Confidence</b> <code>ignore.json</code> flags the ~4% of 2D labels not confirmed by a second detector (kept, but outside the confident set)</li>
+        </ul>
+        <a class="btn btn-primary" href="https://drive.google.com/drive/folders/1K38tgvQN_yl9MOdF1MlKL9oJVHQyFkyC?usp=drive_link">Open the dataset folder</a>
+      </div>
+      <div class="card code-card">
+        <div class="code-head"><span>quick_start.py</span><button class="copy" type="button" data-copy="code-qs">Copy</button></div>
+<pre id="code-qs"><code>import json, cv2
+from pathlib import Path
+
+root    = Path("KITchen_labels_1")
+classes = root.joinpath("classes.txt").read_text().split("\n")
+ignore  = json.loads(root.joinpath("ignore.json").read_text())
+
+stem = "000000"
+rows = [l.split() for l in (root / "labels" / f"{stem}.txt").read_text().splitlines() if l]
+untrusted = set(ignore.get(stem, []))
+
+for i, row in enumerate(rows):
+    if i in untrusted:
+        continue          # or: mask out the loss here
+    cls, cx, cy, w, h = int(row[0]), *map(float, row[1:5])
+    mask = cv2.imread(str(root / "masks" / f"{stem}_obj{i:04d}.png"), cv2.IMREAD_GRAYSCALE)
+    print(classes[cls], (cx, cy, w, h), mask.shape)</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-grid">
+    <img src="static/images/Logo_KIT.png" alt="KIT logo" class="kit-logo" width="160" height="80">
+    <p class="muted small">Questions about the dataset: <a href="mailto:kitchendataset@gmail.com">kitchendataset@gmail.com</a><br>
+      Website originally adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>
