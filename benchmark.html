@@ -105,7 +105,7 @@
     </button>
   </div>
 </header>
-<div class="preview-bar"><div class="wrap">Preview. Baseline scores, download links and the v1.0 checksum fill in when v1.0 is frozen.</div></div>
+<div class="preview-bar"><div class="wrap">Preview. The download and code links go live when the benchmark is published.</div></div>
 
 <main>
 
@@ -125,7 +125,7 @@
       <div class="code-head"><span>terminal</span><button class="copy" type="button" data-copy="code-hero">Copy</button></div>
 <pre id="code-hero"><code><span class="p">$ </span>pip install git+https://github.com/KITchen-Dataset/kitchenbench@v1.0
 <span class="p">$ </span>kitchenbench verify kitchen_bench_v1.0
-<span class="o">KITchen benchmark 1.0 OK (472 files)</span>
+<span class="o">KITchen benchmark 1.0 OK (472 files, ground truth 8a68e45c95aa)</span>
 <span class="p">$ </span>kitchenbench eval kitchen_bench_v1.0 pose my_poses.csv --method method.json
 <span class="o">AP_6D  AP_MSSD  AP_MSPD  AR_6D  fps  rules met
 wrote results/my-method_pose_test.json  .md  .tex</span></code></pre>
@@ -134,14 +134,13 @@ wrote results/my-method_pose_test.json  .md  .tex</span></code></pre>
 
   <div class="wrap">
     <dl class="kpis">
-      <div class="kpi"><dt>Test objects with 6D poses</dt><dd>77,389</dd></div>
+      <div class="kpi"><dt>Test objects with 6D poses</dt><dd>78,101</dd></div>
       <div class="kpi"><dt>Test objects with boxes and masks</dt><dd>93,472</dd></div>
       <div class="kpi"><dt>Object models scored</dt><dd>103</dd></div>
       <div class="kpi"><dt>Object classes</dt><dd>108</dd></div>
       <div class="kpi"><dt>Tasks</dt><dd>3</dd></div>
       <div class="kpi"><dt>Pose speed rule</dt><dd>≥ 5 fps</dd></div>
     </dl>
-    <p class="kpi-note">Test-set counts from release candidate 1.0rc3. They become final when v1.0 is frozen.</p>
   </div>
 </section>
 
@@ -212,8 +211,10 @@ wrote results/my-method_pose_test.json  .md  .tex</span></code></pre>
               <td><span class="m-name">YOLO11m-seg</span> <span class="pill base">Baseline</span><span class="m-sub">KITchen team · RTX A6000</span></td>
               <td>RGB</td>
               <td>KITchen train (every 3rd frame), COCO-pretrained</td>
-              <td class="num" colspan="3"><span class="pill wait">Scores after training ends</span></td>
-              <td><a href="#take-part">JSON</a></td>
+              <td class="num" data-det="84.7" data-segm="92.9">84.7</td>
+              <td class="num" data-det="98.5" data-segm="98.8">98.5</td>
+              <td class="num" data-det="96.8" data-segm="97.8">96.8</td>
+              <td><a href="https://github.com/KITchen-Dataset/kitchenbench/tree/v1.0/baselines/cards">JSON</a></td>
             </tr>
           </tbody>
         </table>
@@ -320,12 +321,11 @@ kitchenbench eval     kitchen_bench_v1.0 pose my_poses.csv --method method.json
           <li><b>Evaluation models</b> with their symmetries</li>
           <li><b>Manifest</b> <code>benchmark.json</code> with the checksum of every file</li>
         </ul>
-        <p class="sha">Ground truth checksum: set when v1.0 is frozen</p>
+        <p class="sha">Ground truth checksum 8a68e45c95aa · archive 206 MB, sha256 25c7e08a0808a0fa289cbed6404742c3adb99c5400d364d571c9302611690d81</p>
         <div class="cta left">
-          <!-- v1.0 freeze: point these at the release archive, the repository and its BENCHMARK.md -->
-          <a class="btn btn-primary" href="#download">Download v1.0</a>
-          <a class="btn" href="#download">Code on GitHub</a>
-          <a class="btn btn-ghost" href="#download">Design and rules</a>
+          <a class="btn btn-primary" href="https://github.com/KITchen-Dataset/kitchenbench/releases/download/v1.0/kitchen_bench_v1.0.zip">Download v1.0</a>
+          <a class="btn" href="https://github.com/KITchen-Dataset/kitchenbench">Code on GitHub</a>
+          <a class="btn btn-ghost" href="https://github.com/KITchen-Dataset/kitchenbench/blob/v1.0/BENCHMARK.md">Design and rules</a>
         </div>
       </div>
       <div class="card code-card">
@@ -389,6 +389,7 @@ kitchenbench eval     kitchen_bench_v1.0 pose my_poses.csv --method method.json
     document.querySelectorAll('[data-panel]').forEach(p => (p.hidden = !p.dataset.panel.split(' ').includes(task)));
     $('#lb-input').hidden = task !== 'pose';
     $('#lb-ap').textContent = task === 'segm' ? 'Mask AP' : 'AP';
+    if (task !== 'pose') document.querySelectorAll('[data-det]').forEach(td => (td.textContent = td.dataset[task]));
     $('#lb-foot').textContent = foot[task];
   });
   $('#lb-input').addEventListener('click', e => {
