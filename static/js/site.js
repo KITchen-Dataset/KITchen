@@ -57,6 +57,8 @@
     initExplorer(samples, byId, models);
     initObjects(classes, models);
     initCharts(stats, classes);
+    // The sections above an anchor are drawn from data, so jump to it again once they are.
+    if (location.hash) requestAnimationFrame(() => document.getElementById(location.hash.slice(1))?.scrollIntoView());
   }).catch(err => console.error('KITchen page data failed to load:', err));
 
   /* ───────────── KPIs ───────────── */

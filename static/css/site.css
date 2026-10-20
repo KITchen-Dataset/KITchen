@@ -109,6 +109,7 @@ h1, h2, h3 { font-family: var(--display); line-height: 1.12; margin: 0; letter-s
 .btn:hover { text-decoration: none; transform: translateY(-1px); border-color: var(--text-3); }
 .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .btn-primary:hover { border-color: var(--accent-strong); background: var(--accent-strong); }
+.btn-ghost { background: transparent; box-shadow: none; }
 .hero-visual { margin: 0; }
 .hero-frame { position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 16 / 9; background: #000; box-shadow: var(--shadow-lg); border: 1px solid var(--border); }
 .hero-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .9s ease; }

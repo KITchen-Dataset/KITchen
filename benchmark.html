@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KITchen Benchmark</title>
+  <meta name="description" content="The KITchen benchmark: frozen splits, public ground truth and one evaluator for 2D detection, instance segmentation and 6D object pose on real kitchen scenes seen by a humanoid robot.">
+  <meta property="og:title" content="KITchen benchmark">
+  <meta property="og:description" content="Score 2D detection, instance segmentation and 6D object pose on KITchen with one command that writes a citable result card.">
+  <meta property="og:image" content="https://kitchen-dataset.github.io/KITchen/static/samples/016892.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2300876c'/%3E%3Cpath d='M18 46V18h7v11l11-11h9L32 31l14 15h-9l-12-13v13z' fill='white'/%3E%3C/svg%3E">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZRBT9DCW3F"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ZRBT9DCW3F');
+  </script>
+
+  <script>
+    // Apply the saved theme before first paint to avoid a flash.
+    try { const t = localStorage.getItem('kitchen-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/site.css">
+  <style>
+    /* Benchmark page additions. Colours come from the site tokens in site.css. */
+    :root { --ok: #1a7f4b; --ok-soft: #e3f4ea; --wait: #8a5a00; --wait-soft: #fbf0d9; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ok: #5fd39a; --ok-soft: #14301f; --wait: #f0c25e; --wait-soft: #33280f; } }
+    :root[data-theme="dark"] { --ok: #5fd39a; --ok-soft: #14301f; --wait: #f0c25e; --wait-soft: #33280f; }
+    body { background: var(--bg); color: var(--text); }
+    h1, h2, h3 { text-wrap: balance; }
+
+    .preview-bar { background: var(--wait-soft); color: var(--wait); border-bottom: 1px solid var(--border); font-size: .86rem; font-weight: 500; }
+    .preview-bar .wrap { padding-block: 9px; }
+    .nav-links a[aria-current="page"] { color: var(--text); font-weight: 600; }
+
+    .hero .lede { max-width: 40ch; }
+    .term pre { font-size: .8rem; }
+    .term .p { color: var(--accent); user-select: none; }
+    .term .o { color: var(--text-3); }
+    .kpi-note { margin: 10px 2px 0; font-size: .8rem; color: var(--text-3); }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+    .task { display: flex; flex-direction: column; gap: 14px; }
+    .task-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+    .proto { font: 500 .74rem var(--mono); color: var(--text-3); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; white-space: nowrap; }
+    .task dl { margin: 0; display: grid; gap: 10px; }
+    .task dt { font-size: .74rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); font-weight: 600; }
+    .task dd { margin: 2px 0 0; color: var(--text-2); font-size: .94rem; }
+    .task dd b { color: var(--text); font-weight: 650; }
+
+    .lb-tools { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    [hidden] { display: none !important; }
+    .lb .table-wrap { overflow-x: auto; }
+    .lb .tbl { min-width: 680px; }
+    .lb .tbl td, .lb .tbl th { vertical-align: middle; }
+    .lb .tbl td:first-child { color: var(--text-3); width: 36px; }
+    .m-name { font-weight: 600; color: var(--text); }
+    .m-sub { display: block; font-size: .8rem; color: var(--text-3); margin-top: 2px; }
+    .pill { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 9px; border-radius: 999px; font-size: .76rem; font-weight: 600; white-space: nowrap; }
+    .pill.wait { background: var(--wait-soft); color: var(--wait); }
+    .pill.ok { background: var(--ok-soft); color: var(--ok); }
+    .pill.base { background: var(--accent-soft); color: var(--accent-strong); }
+    .lb-empty { text-align: center; padding: 40px 16px; color: var(--text-2); }
+    .lb-empty h3 { margin-bottom: 6px; }
+    .lb-empty p { margin: 0 auto 16px; max-width: 46ch; }
+    .lb-foot { margin: 12px 2px 0; font-size: .84rem; color: var(--text-3); }
+
+    .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; counter-reset: step; }
+    .steps li { counter-increment: step; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 14px; }
+    .steps li::before { content: counter(step); width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+      font: 700 .95rem var(--display); background: var(--accent-soft); color: var(--accent-strong); }
+    .steps h3 { font-size: 1.02rem; margin-bottom: 4px; }
+    .steps p { margin: 0; color: var(--text-2); font-size: .94rem; }
+    .steps code { font-size: .84em; }
+
+    .sha { font: 500 .82rem var(--mono); color: var(--text-2); background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin: 0 0 18px; overflow-wrap: anywhere; }
+    .cta.left { margin-top: 4px; }
+
+    @media (max-width: 1080px) { .grid-3 { grid-template-columns: minmax(0, 1fr); } }
+  </style>
+</head>
+<body>
+
+<header class="nav" id="top">
+  <div class="nav-inner">
+    <a class="brand" href="./" aria-label="KITchen home"><span class="brand-mark">K</span>KITchen</a>
+    <nav class="nav-links" aria-label="Pages and sections">
+      <a href="./">Home</a>
+      <a href="explore.html">Explore</a>
+      <a href="benchmark.html" aria-current="page">Benchmark</a>
+      <a href="#tasks">Tasks</a>
+      <a href="#leaderboard">Leaderboard</a>
+      <a href="#take-part">Take part</a>
+      <a href="#download">Download</a>
+    </nav>
+    <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch light or dark theme">
+      <svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</header>
+<div class="preview-bar"><div class="wrap">Preview. Baseline scores, download links and the v1.0 checksum fill in when v1.0 is frozen.</div></div>
+
+<main>
+
+<!-- ───────────────────────── Intro ───────────────────────── -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">KITchen benchmark v1.0</p>
+      <h1>Benchmark</h1>
+      <p class="lede">Frozen splits, public ground truth and <strong>one command</strong> that checks, scores and writes a citable result card for 2D detection, instance segmentation and 6D pose.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#take-part">Take part</a>
+        <a class="btn" href="#leaderboard">See the leaderboard</a>
+      </div>
+    </div>
+    <div class="card code-card term" aria-label="Quick start">
+      <div class="code-head"><span>terminal</span><button class="copy" type="button" data-copy="code-hero">Copy</button></div>
+<pre id="code-hero"><code><span class="p">$ </span>pip install git+https://github.com/KITchen-Dataset/kitchenbench@v1.0
+<span class="p">$ </span>kitchenbench verify kitchen_bench_v1.0
+<span class="o">KITchen benchmark 1.0 OK (472 files)</span>
+<span class="p">$ </span>kitchenbench eval kitchen_bench_v1.0 pose my_poses.csv --method method.json
+<span class="o">AP_6D  AP_MSSD  AP_MSPD  AR_6D  fps  rules met
+wrote results/my-method_pose_test.json  .md  .tex</span></code></pre>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <dl class="kpis">
+      <div class="kpi"><dt>Test objects with 6D poses</dt><dd>77,389</dd></div>
+      <div class="kpi"><dt>Test objects with boxes and masks</dt><dd>93,472</dd></div>
+      <div class="kpi"><dt>Object models scored</dt><dd>103</dd></div>
+      <div class="kpi"><dt>Object classes</dt><dd>108</dd></div>
+      <div class="kpi"><dt>Tasks</dt><dd>3</dd></div>
+      <div class="kpi"><dt>Pose speed rule</dt><dd>≥ 5 fps</dd></div>
+    </dl>
+    <p class="kpi-note">Test-set counts from release candidate 1.0rc3. They become final when v1.0 is frozen.</p>
+  </div>
+</section>
+
+<!-- ───────────────────────── Tasks ───────────────────────── -->
+<section class="section alt" id="tasks">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Three tasks</p>
+      <h2>What you can be scored on</h2>
+      <p class="sub">Each task uses the community's standard protocol, so existing methods and evaluation code plug in unchanged.</p>
+    </div>
+    <div class="grid-3">
+      <article class="card task">
+        <div class="task-top"><h3>2D object detection</h3><span class="proto">COCO</span></div>
+        <dl>
+          <div><dt>You predict</dt><dd>A box, class and score for each object, as a COCO results file.</dd></div>
+          <div><dt>Primary score</dt><dd><b>AP</b> averaged over IoU 0.50 to 0.95</dd></div>
+          <div><dt>Also reported</dt><dd>AP50, AP75, AP for small, medium and large objects, AR at 300 detections</dd></div>
+        </dl>
+      </article>
+      <article class="card task">
+        <div class="task-top"><h3>Instance segmentation</h3><span class="proto">COCO</span></div>
+        <dl>
+          <div><dt>You predict</dt><dd>An RLE mask, class and score for each object, as a COCO results file.</dd></div>
+          <div><dt>Primary score</dt><dd><b>Mask AP</b> averaged over IoU 0.50 to 0.95</dd></div>
+          <div><dt>Also reported</dt><dd>AP50, AP75, AP by object size, AR at 300 detections</dd></div>
+        </dl>
+      </article>
+      <article class="card task">
+        <div class="task-top"><h3>6D object pose</h3><span class="proto">BOP</span></div>
+        <dl>
+          <div><dt>You predict</dt><dd>Rotation, translation in mm, object id, score and run time per image, as a BOP CSV.</dd></div>
+          <div><dt>Primary score</dt><dd><b>AP<sub>6D</sub></b>, the mean of AP<sub>MSSD</sub> and AP<sub>MSPD</sub> (BOP 2024)</dd></div>
+          <div><dt>Also reported</dt><dd>AR<sub>6D</sub> (BOP 2019). Symmetric objects are scored with their symmetries.</dd></div>
+        </dl>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── Leaderboard ───────────────────────── -->
+<section class="section lb" id="leaderboard">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Results on the test split</p>
+      <h2>Leaderboard</h2>
+      <p class="sub">Ranked by the primary score. Every row links to its result card, which stores the checksums needed to reproduce the number.</p>
+    </div>
+    <div class="card">
+      <div class="lb-tools">
+        <div class="seg" id="lb-task" role="group" aria-label="Task">
+          <button type="button" class="chip on" data-task="det" aria-pressed="true">Detection</button>
+          <button type="button" class="chip" data-task="segm" aria-pressed="false">Segmentation</button>
+          <button type="button" class="chip" data-task="pose" aria-pressed="false">6D pose</button>
+        </div>
+        <div class="seg small" id="lb-input" role="group" aria-label="Input" hidden>
+          <button type="button" class="chip on" data-input="rgb" aria-pressed="true">RGB</button>
+          <button type="button" class="chip" data-input="rgbd" aria-pressed="false">RGB-D</button>
+        </div>
+      </div>
+
+      <div class="table-wrap" data-panel="det segm">
+        <table class="tbl">
+          <thead><tr><th>#</th><th>Method</th><th>Input</th><th>Training data</th><th class="num" id="lb-ap">AP</th><th class="num">AP50</th><th class="num">AP75</th><th>Card</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><span class="m-name">YOLO11m-seg</span> <span class="pill base">Baseline</span><span class="m-sub">KITchen team · RTX A6000</span></td>
+              <td>RGB</td>
+              <td>KITchen train (every 3rd frame), COCO-pretrained</td>
+              <td class="num" colspan="3"><span class="pill wait">Scores after training ends</span></td>
+              <td><a href="#take-part">JSON</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div data-panel="pose" hidden>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>#</th><th>Method</th><th>Training data</th><th class="num">AP<sub>6D</sub></th><th class="num">AP<sub>MSSD</sub></th><th class="num">AP<sub>MSPD</sub></th><th class="num">AR<sub>6D</sub></th><th class="num">fps</th><th>Rules</th><th>Card</th></tr></thead>
+          </table>
+        </div>
+        <div class="lb-empty">
+          <h3>No <span id="lb-input-name">RGB</span> pose results yet</h3>
+          <p>Score your method with one command and open an issue with its result card to appear here first.</p>
+          <a class="btn" href="#take-part">How to submit</a>
+        </div>
+      </div>
+      <p class="lb-foot" id="lb-foot">Detection and segmentation methods are ranked together whatever their input; the card states it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── Take part ───────────────────────── -->
+<section class="section alt" id="take-part">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Take part</p>
+      <h2>From predictions to the leaderboard</h2>
+      <p class="sub">The same command checks your file, scores it and writes the card you cite, so a reported number can always be traced back to the exact ground truth and predictions.</p>
+    </div>
+    <div class="grid-2 align-start">
+      <ol class="steps">
+        <li><div><h3>Get the benchmark</h3><p>Install the evaluator and download the v1.0 files. <code>verify</code> confirms your copy of the ground truth is the frozen one.</p></div></li>
+        <li><div><h3>Train and tune</h3><p>Train on <code>train</code> and tune on <code>val</code>. No test frame, test annotation or frame from a test block may be used.</p></div></li>
+        <li><div><h3>Predict on the test frames</h3><p>Run on the frames in <code>splits/test_eval.txt</code>: a COCO results file for detection and segmentation, a BOP CSV with the run time of each image for pose.</p></div></li>
+        <li><div><h3>Score and submit</h3><p><code>validate</code> catches format mistakes, <code>eval</code> writes the result card with a ready-made table row for your paper. Open an issue on the benchmark repository with the card attached.</p></div></li>
+      </ol>
+      <div class="card code-card">
+        <div class="code-head"><span>take_part.sh</span><button class="copy" type="button" data-copy="code-steps">Copy</button></div>
+<pre id="code-steps"><code># 1. get the benchmark
+pip install git+https://github.com/KITchen-Dataset/kitchenbench@v1.0
+unzip kitchen_bench_v1.0.zip
+kitchenbench verify kitchen_bench_v1.0
+
+# 3. describe your method once
+kitchenbench method-template > method.json
+
+# 4. check and score (det, segm or pose)
+kitchenbench validate kitchen_bench_v1.0 pose my_poses.csv
+kitchenbench eval     kitchen_bench_v1.0 pose my_poses.csv --method method.json
+# results/my-method_pose_test.json  .md  .tex</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── Rules ───────────────────────── -->
+<section class="section" id="rules">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Fair comparison</p>
+      <h2>Rules and splits</h2>
+    </div>
+    <div class="grid-2 align-start">
+      <div class="card">
+        <h3>Rules</h3>
+        <ul class="ticks">
+          <li><b>Report the version</b> with every number, for example "KITchen v1.0 AP<sub>6D</sub>".</li>
+          <li><b>State the input and all training data</b>, pretraining included. Pose methods using RGB and RGB-D are ranked separately.</li>
+          <li><b>One model for all objects</b> for pose, as in the KITchen paper.</li>
+          <li><b>At least 5 fps</b> for pose, measured as wall time per image on the hardware you state.</li>
+          <li><b>Pose methods that meet both paper rules rank first.</b> The others are listed below them.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>How the splits are made</h3>
+        <ul class="ticks">
+          <li><b>Whole blocks of 250 frames</b> go to train, validation or test (70%, 10% and 20% of the blocks, fixed seed), because consecutive frames are near-duplicates.</li>
+          <li><b>25 train frames are dropped</b> on each side of a validation or test block.</li>
+          <li><b>Every 6th frame</b> of the test blocks is scored.</li>
+          <li><b>The test ground truth is public</b> and the evaluator is frozen and versioned. New annotations always mean a new version.</li>
+        </ul>
+        <a class="btn" href="explore.html#splits">See the splits on the Explore page</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── Download ───────────────────────── -->
+<section class="section alt" id="download">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Get the benchmark</p>
+      <h2>Download &amp; cite</h2>
+    </div>
+    <div class="grid-2 align-start">
+      <div class="card">
+        <h3>Benchmark files v1.0</h3>
+        <p class="muted small">One archive with everything the evaluator needs. The images come from the dataset download.</p>
+        <ul class="ticks">
+          <li><b>Splits</b> train, validation and test frame lists, plus the scored test frames</li>
+          <li><b>2D ground truth</b> COCO files with boxes, masks and ignore regions</li>
+          <li><b>6D ground truth</b> BOP files with poses and the pairs left out of scoring</li>
+          <li><b>Evaluation models</b> with their symmetries</li>
+          <li><b>Manifest</b> <code>benchmark.json</code> with the checksum of every file</li>
+        </ul>
+        <p class="sha">Ground truth checksum: set when v1.0 is frozen</p>
+        <div class="cta left">
+          <!-- v1.0 freeze: point these at the release archive, the repository and its BENCHMARK.md -->
+          <a class="btn btn-primary" href="#download">Download v1.0</a>
+          <a class="btn" href="#download">Code on GitHub</a>
+          <a class="btn btn-ghost" href="#download">Design and rules</a>
+        </div>
+      </div>
+      <div class="card code-card">
+        <div class="code-head"><span>Cite the KITchen paper and state the benchmark version</span><button class="copy" type="button" data-copy="code-bib">Copy</button></div>
+<pre id="code-bib"><code>@inproceedings{younes2024kitchen,
+  title     = {{KITchen}: A Real-World Benchmark and Dataset
+               for {6D} Object Pose Estimation in Kitchen Environments},
+  author    = {Younes, Abdelrahman and Asfour, Tamim},
+  booktitle = {2024 IEEE-RAS 23rd International Conference
+               on Humanoid Robots (Humanoids)},
+  pages     = {803--810},
+  year      = {2024},
+  doi       = {10.1109/Humanoids58906.2024.10769947},
+}</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-grid">
+    <img src="static/images/Logo_KIT.png" alt="KIT logo" class="kit-logo" width="160" height="80">
+    <p class="muted small">Questions about the dataset: <a href="mailto:kitchendataset@gmail.com">kitchendataset@gmail.com</a><br>
+      Website originally adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  $('#theme-toggle').addEventListener('click', () => {
+    const root = document.documentElement;
+    const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.dataset.theme = dark ? 'light' : 'dark';
+    try { localStorage.setItem('kitchen-theme', root.dataset.theme); } catch (e) {}
+  });
+
+  document.querySelectorAll('.copy').forEach(btn => btn.addEventListener('click', () => {
+    const el = document.getElementById(btn.dataset.copy);
+    const text = el.innerText.replace(/^\$ /gm, '');
+    const done = label => { btn.textContent = label; setTimeout(() => (btn.textContent = 'Copy'), 1600); };
+    navigator.clipboard.writeText(text).then(() => done('Copied'), () => {
+      const r = document.createRange(); r.selectNodeContents(el);
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      done('Press Ctrl+C');
+    });
+  }));
+
+  const press = (group, btn) => group.querySelectorAll('.chip').forEach(b => {
+    const on = b === btn; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
+  });
+  const foot = {
+    det: 'Detection and segmentation methods are ranked together whatever their input; the card states it.',
+    segm: 'Detection and segmentation methods are ranked together whatever their input; the card states it.',
+    pose: 'Methods with one model for all objects and at least 5 fps rank first.'
+  };
+  $('#lb-task').addEventListener('click', e => {
+    const btn = e.target.closest('.chip'); if (!btn) return;
+    const task = btn.dataset.task; press($('#lb-task'), btn);
+    document.querySelectorAll('[data-panel]').forEach(p => (p.hidden = !p.dataset.panel.split(' ').includes(task)));
+    $('#lb-input').hidden = task !== 'pose';
+    $('#lb-ap').textContent = task === 'segm' ? 'Mask AP' : 'AP';
+    $('#lb-foot').textContent = foot[task];
+  });
+  $('#lb-input').addEventListener('click', e => {
+    const btn = e.target.closest('.chip'); if (!btn) return;
+    press($('#lb-input'), btn);
+    $('#lb-input-name').textContent = btn.dataset.input === 'rgbd' ? 'RGB-D' : 'RGB';
+  });
+})();
+</script>
+
+</body>
+</html>
