@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <title>KITchen: A Real-World Benchmark and Dataset for 6D Object Pose Estimation in Kitchen Environments</title>
   <meta name="description"
         content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -34,8 +35,51 @@
   <script src="./static/js/bulma-slider.min.js"></script>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <!-- <script src="http://popcornjs.org/code/dist/popcorn-complete.js"></script> -->
+  <script>
+    // Apply the saved theme before first paint to avoid a flash (shared with the other pages).
+    try { const t = localStorage.getItem('kitchen-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  <style>
+    /* Light and dark themes. Light keeps the original look; dark only overrides colours. */
+    :root { --kt-bg: #ffffff; --kt-bg-alt: #fafafa; --kt-text: #4a4a4a; --kt-title: #363636; --kt-link: #485fc7;
+      --kt-code: #f5f5f5; --kt-border: #dbdbdb; --kt-btn: #363636; --kt-btn-text: #ffffff; --kt-logo-filter: none; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --kt-bg: #0f1110; --kt-bg-alt: #141716;
+      --kt-text: #c3c2b7; --kt-title: #f0efec; --kt-link: #7fa7ff; --kt-code: #191c1b; --kt-border: #2a2f2d; --kt-btn: #f0efec;
+      --kt-btn-text: #121211; --kt-logo-filter: invert(1) hue-rotate(180deg) brightness(1.2); } }
+    :root[data-theme="dark"] { color-scheme: dark; --kt-bg: #0f1110; --kt-bg-alt: #141716;
+      --kt-text: #c3c2b7; --kt-title: #f0efec; --kt-link: #7fa7ff; --kt-code: #191c1b; --kt-border: #2a2f2d; --kt-btn: #f0efec;
+      --kt-btn-text: #121211; --kt-logo-filter: invert(1) hue-rotate(180deg) brightness(1.2); }
+    html, body { background: var(--kt-bg); color: var(--kt-text); }
+    .title, .content h2, .content strong { color: var(--kt-title); }
+    .content, .content p { color: var(--kt-text); }
+    a { color: var(--kt-link); }
+    .content pre, pre { background: var(--kt-code); color: var(--kt-text); }
+    .button.is-dark, .button.is-dark:hover, .button.is-dark:focus { background: var(--kt-btn); color: var(--kt-btn-text); }
+    .kit-logo, .hero img[src$="Logo_KIT.png"] { filter: var(--kt-logo-filter); }
+
+    .icon-btn { position: fixed; top: 14px; right: 14px; z-index: 30; width: 40px; height: 40px; display: grid; place-items: center;
+      border-radius: 50%; border: 1px solid var(--kt-border); background: var(--kt-bg); color: var(--kt-title); cursor: pointer; }
+    .icon-btn:focus-visible { outline: 2px solid var(--kt-link); outline-offset: 2px; }
+    .i-moon { display: none; }
+    :root[data-theme="dark"] .i-sun { display: none; }
+    :root[data-theme="dark"] .i-moon { display: block; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .i-sun { display: none; }
+      :root:not([data-theme="light"]) .i-moon { display: block; }
+    }
+
+    .footer { background: var(--kt-bg-alt); padding: 2.75rem 1.5rem 3.5rem; }
+    .footer-grid { display: flex; align-items: center; justify-content: center; gap: 28px; flex-wrap: wrap; }
+    .footer-grid p { margin: 0; font-size: .875rem; color: var(--kt-text); }
+    .kit-logo { width: 140px; height: auto; }
+  </style>
 </head>
 <body>
+
+  <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch light or dark theme">
+    <svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+  </button>
 
 
 <section class="hero">
@@ -124,15 +168,15 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>Despite the recent progress on 6D object pose
-estimation methods for robotic grasping, a substantial perfor-
-mance gap persists between the capabilities of these methods
+estimation methods for robotic grasping, a substantial performance
+ gap persists between the capabilities of these methods
 on existing datasets and their efficacy in real-world mobile
 manipulation tasks, particularly when robots rely solely on their
 monocular egocentric field of view (FOV). Existing real-world
 datasets primarily focus on table-top grasping scenarios, where
 a robotic arm is placed in a fixed position and the objects are
-centralized within the FOV of fixed external camera(s). Assess-
-ing performance on such datasets may not accurately reflect
+centralized within the FOV of fixed external camera(s). Assessing
+ performance on such datasets may not accurately reflect
 the challenges encountered in everyday mobile manipulation
 tasks within kitchen environments such as retrieving objects
 from higher shelves, sinks, dishwashers, ovens, refrigerators, or
@@ -151,7 +195,7 @@ annotation pipeline will be publicly available upon acceptance.
           </p>
           	</div>
 	<div class="content is-centered has-text-centered">
-        <img src="static/images/Kitchen_locations.png" width="100%">
+        <img src="static/images/web/Kitchen_locations.jpg" width="100%">
       </div>
   <br>
 <br>
@@ -164,7 +208,7 @@ annotation pipeline will be publicly available upon acceptance.
           
         </div>
         	<div class="content is-centered has-text-centered">
-        <img src="static/images/AnnotationPipelineFinal.png" width="100%">
+        <img src="static/images/web/AnnotationPipelineFinal.jpg" width="100%">
       </div>
 
     </div>
@@ -192,8 +236,8 @@ annotation pipeline will be publicly available upon acceptance.
           </p>
                   </div>
 	<div class="content is-centered has-text-centered">
-        <img class="image-no-space" src="static/images/annotation_4rows.png" width="100%">
-        <img class="image-no-space" src="static/images/annotation_7.png" width="100%">
+        <img class="image-no-space" src="static/images/web/annotation_4rows.jpg" width="100%">
+        <img class="image-no-space" src="static/images/web/annotation_7.jpg" width="100%">
       </div>
 
   </div>
@@ -223,19 +267,21 @@ model-viewer {
 
 
 <footer class="footer">
-  <div class="container">
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-          <p>
-            Website is adapted from
-              <a href="https://github.com/nerfies/nerfies.github.io">here</a>.
-          </p>
-        </div>
-      </div>
-    </div>
+  <div class="container footer-grid">
+    <img src="static/images/Logo_KIT.png" alt="KIT logo" class="kit-logo" width="160" height="80">
+    <p>Questions about the dataset: <a href="mailto:kitchendataset@gmail.com">kitchendataset@gmail.com</a><br>
+      Website originally adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.</p>
   </div>
 </footer>
+
+<script>
+  document.querySelector('#theme-toggle').addEventListener('click', () => {
+    const root = document.documentElement;
+    const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.dataset.theme = dark ? 'light' : 'dark';
+    try { localStorage.setItem('kitchen-theme', root.dataset.theme); } catch (e) {}
+  });
+</script>
 
 </body>
 </html>

@@ -83,6 +83,7 @@ h1, h2, h3 { font-family: var(--display); line-height: 1.12; margin: 0; letter-s
 .nav-links { display: flex; gap: 4px; margin-left: auto; }
 .nav-links a { color: var(--text-2); font-size: .92rem; font-weight: 500; padding: 6px 10px; border-radius: 8px; }
 .nav-links a:hover { color: var(--text); background: var(--surface-2); text-decoration: none; }
+.nav-links a[aria-current="page"] { color: var(--text); font-weight: 600; }
 .icon-btn { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); cursor: pointer; }
 .icon-btn:hover { color: var(--text); border-color: var(--border-strong); }
 .i-moon { display: none; }
