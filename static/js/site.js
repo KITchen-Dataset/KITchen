@@ -11,7 +11,7 @@
   const catColor = c => { const i = CATS.indexOf(c); return css(i >= 0 ? `--s${i + 1}` : '--text-3'); };
   const pad6 = n => String(n).padStart(6, '0');
   // Benchmark splits (kitchenbench): name and colour token per subset.
-  const SPLITS = { train: ['Train', '--s1'], val: ['Validation', '--s4'], test: ['Test', '--s5'], buffer: ['Gap', '--text-3'] };
+  const SPLITS = { train: ['Train', '--s1'], val: ['Validation', '--s4'], test: ['Test', '--s5'], buffer: ['Unassigned', '--text-3'] };
   const splitName = f => f.split && SPLITS[f.split] ? `${SPLITS[f.split][0]} split` : 'KITchen';
   const $ = s => document.querySelector(s);
 
@@ -521,7 +521,7 @@
       const x = d3.scaleLinear().domain([0, vals.length - 1]).range([0, iw]);
       const y = d3.scaleLinear().domain([0, d3.max(vals)]).nice().range([ih, 0]);
       yAxis(g, y, iw, d3.format('d'));
-      // Benchmark split of every 250-frame block, as a strip above the plot
+      // Benchmark split of every frame (lab room = train, kitchen setups = val/test), as a strip above the plot
       const bands = stats.benchmark.bands, xf = f => x(f * (vals.length - 1));
       g.append('g').selectAll('rect').data(bands).join('rect')
         .attr('x', d => xf(d[0])).attr('width', d => Math.max(0.6, xf(d[1]) - xf(d[0]))).attr('y', -18).attr('height', 10)
@@ -551,7 +551,7 @@
       const tb = $('#seq-table tbody'), tf = $('#seq-table tfoot'), T = stats.totals;
       const pct = (a, b) => `<span class="pct">${(100 * a / b).toFixed(1)}%</span>`;
       tb.innerHTML = stats.benchmark.splits.map(s => `<tr${s.id === 'buffer' ? ' class="muted-row"' : ''}><td><span class="sw" style="background:${css(SPLITS[s.id][1])}"></span>` +
-        `${s.id === 'buffer' ? 'Gap frames <span class="tag">not used</span>' : `<b>${s.name}</b>`}</td>` +
+        `${s.id === 'buffer' ? 'Unassigned <span class="tag">not used</span>' : `<b>${s.name}</b>`}</td>` +
         `<td class="num">${fmt(s.objects)}</td><td class="num">${fmt(s.confident)}${pct(s.confident, s.objects)}</td><td class="num">${fmt(s.poses)}</td></tr>`).join('');
       tf.innerHTML = `<tr><td>Total</td><td class="num">${fmt(T.objects)}</td><td class="num">${fmt(T.confident)}${pct(T.confident, T.objects)}</td><td class="num">${fmt(T.poses)}</td></tr>`;
     }

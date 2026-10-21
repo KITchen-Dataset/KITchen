@@ -3,7 +3,7 @@
 
 Re-run this whenever the release changes (new pose version, new labels):
 
-    python scripts/build_stats.py /path/to/kat_release --out data/stats.json
+    python scripts/build_stats.py /path/to/kat_release --split-file splits/setups.csv --out data/stats.json
 
 Expected layout (one folder per release part; each holds many recording sequences)::
 
@@ -15,8 +15,11 @@ Expected layout (one folder per release part; each holds many recording sequence
         scene_gt.json      {stem: [{obj_id, cam_R_m2c, cam_t_m2c, ...}]}  (optional)
 
 The train / validation / test numbers follow the KITchen benchmark split
-(kitchenbench): 250-frame blocks drawn per part with seed 2026 (70/10/20 % of
-blocks), with the 25 train frames next to a validation or test block left out.
+(kitchenbench v1.0): train is the lab room, validation and test are the
+built-in kitchen, with each kitchen setup (one arrangement of objects) kept
+whole in one split. The split comes from ``splits/setups.csv`` (stem,setup,split)
+in the benchmark archive, or from a run list (start,end,setup,split; stems
+inclusive); frames it does not list are left out, as in kitchenbench build.
 
 Only the standard library is used, so it runs anywhere.
 """
@@ -24,8 +27,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import csv
 import math
-import random
 import re
 from collections import Counter
 from datetime import date
@@ -36,7 +39,7 @@ DIST_BIN_CM = 10                 # camera-distance histogram bin width
 DIST_MAX_CM = 400
 OBJ_PER_FRAME_MAX = 80           # last bin holds 80+ objects
 AREA_BINS = [0, 0.001, 0.0025, 0.005, 0.01, 0.02, 0.05, 0.1, 1.0]  # fraction of image
-BENCH_SUBSETS = [("train", "Train"), ("val", "Validation"), ("test", "Test"), ("buffer", "Gap frames")]
+BENCH_SUBSETS = [("train", "Train"), ("val", "Validation"), ("test", "Test"), ("buffer", "Unassigned")]
 
 # Coarse groups for the class browser.  Classes not listed fall into "Packaged food".
 CATEGORY_RULES = [
@@ -68,25 +71,28 @@ def pretty(name: str) -> str:
     return s[:1].upper() + s[1:]
 
 
-def assign_splits(stems: list[str], block: int, buffer: int, frac, seed: int, tag: str) -> dict[str, str]:
-    """{stem: train|val|test|buffer}; the same rule as kitchenbench.build.assign_splits."""
-    width = len(stems[0])
-    nums = sorted(int(s) for s in stems)
-    order = sorted({n // block for n in nums})
-    random.Random(f"{seed}-{tag}").shuffle(order)
-    n_test = round(frac[2] * len(order))
-    n_val = round(frac[1] * len(order))
-    sub_of = {b: ("test" if i < n_test else "val" if i < n_test + n_val else "train") for i, b in enumerate(order)}
-    out = {}
-    for n in nums:
-        b, pos = n // block, n % block
-        s = sub_of[b]
-        if s == "train" and buffer > 0 and (
-                (pos < buffer and sub_of.get(b - 1, "train") != "train")
-                or (pos >= block - buffer and sub_of.get(b + 1, "train") != "train")):
-            s = "buffer"
-        out[str(n).zfill(width)] = s
-    return out
+def read_split_file(path: Path) -> dict[str, tuple[str, str]]:
+    """{stem: (setup, split)}; the same checks as kitchenbench.build.read_split_file."""
+    rows, subs = {}, {}
+    with path.open(newline="") as fh:
+        for r in csv.DictReader(fh):
+            if r["split"] not in ("train", "val", "test", "buffer"):
+                raise SystemExit(f"{path}: unknown split {r['split']!r} for {r.get('stem', r.get('start'))}")
+            if "stem" in r:
+                stems = [r["stem"]]
+            else:                # run list: start..end inclusive
+                w = len(r["start"])
+                stems = [str(n).zfill(w) for n in range(int(r["start"]), int(r["end"]) + 1)]
+            for stem in stems:
+                if stem in rows:
+                    raise SystemExit(f"{path}: {stem} listed twice")
+                rows[stem] = (r["setup"], r["split"])
+            if r["split"] != "buffer":
+                subs.setdefault(r["setup"], set()).add(r["split"])
+    mixed = sorted(k for k, v in subs.items() if len(v) > 1)
+    if mixed:
+        raise SystemExit(f"{path}: setups in more than one split: {mixed[:5]}")
+    return rows
 
 
 def seq_dirs(root: Path) -> list[Path]:
@@ -99,13 +105,9 @@ def main() -> None:
     ap.add_argument("release", type=Path)
     ap.add_argument("--out", type=Path, default=Path(__file__).resolve().parent.parent / "data" / "stats.json")
     bench = ap.add_argument_group("benchmark split (keep in sync with kitchenbench build)")
-    bench.add_argument("--block", type=int, default=250)
-    bench.add_argument("--buffer", type=int, default=25)
-    bench.add_argument("--frac", default="0.7,0.1,0.2", help="train,val,test fractions of blocks")
-    bench.add_argument("--stride", type=int, default=6, help="every n-th val/test frame is scored")
-    bench.add_argument("--seed", type=int, default=2026)
+    bench.add_argument("--split-file", type=Path, required=True, help="splits/setups.csv from the benchmark archive, or its run list")
     args = ap.parse_args()
-    frac = [float(x) for x in args.frac.split(",")]
+    setups = read_split_file(args.split_file)
 
     seqs = seq_dirs(args.release)
     if not seqs:
@@ -119,7 +121,7 @@ def main() -> None:
     dist_hist = [0] * (DIST_MAX_CM // DIST_BIN_CM)
     dist_by_cls: dict[int, list[float]] = {}
     seq_rows = []; timeline = []
-    sub_rows = {k: {"id": k, "name": n, "objects": 0, "confident": 0, "poses": 0, "blocks": set()} for k, n in BENCH_SUBSETS}
+    sub_rows = {k: {"id": k, "name": n, "objects": 0, "confident": 0, "poses": 0, "setups": set()} for k, n in BENCH_SUBSETS}
     bands = []                   # [start, end) runs of one subset, in timeline (frame) order
     tot_frames = tot_obj = tot_conf = tot_pose = 0
 
@@ -127,14 +129,15 @@ def main() -> None:
         sid = int(re.search(r"_(\d+)$", sd.name).group(1))
         ignore = json.loads((sd / "ignore.json").read_text()) if (sd / "ignore.json").exists() else {}
         files = sorted((sd / "labels").glob("*.txt"))
-        subset = assign_splits([f.stem for f in files], args.block, args.buffer, frac, args.seed, str(sid)) if files else {}
+        subset = {f.stem: setups[f.stem][1] if f.stem in setups else "buffer" for f in files}
         s_obj = s_conf = 0
         for f in files:
             stem = f.stem
             bad = set(ignore.get(stem, []))
             rows = [l.split() for l in f.read_text().splitlines() if l.strip()]
             sub = sub_rows[subset[stem]]
-            sub["blocks"].add((sid, int(stem) // args.block))
+            if stem in setups:
+                sub["setups"].add(setups[stem][0])
             if bands and bands[-1][2] == sub["id"]:
                 bands[-1][1] += 1
             else:
@@ -202,8 +205,8 @@ def main() -> None:
                    "parts": len(seqs), "poses": tot_pose,
                    "objects_per_frame_mean": round(tot_obj / max(1, tot_frames), 1)},
         "parts": seq_rows,
-        "benchmark": {"block": args.block, "buffer": args.buffer, "frac": frac, "stride": args.stride, "seed": args.seed,
-                      "splits": [{k: v for k, v in r.items() if k != "blocks"} for r in sub_rows.values()],
+        "benchmark": {"unit": "setup",
+                      "splits": [{k: v for k, v in r.items() if k != "setups"} for r in sub_rows.values()],
                       # [start, end) of each run as a fraction of the recording order
                       "bands": [[round(a / tot_frames, 4), round(b / tot_frames, 4), s] for a, b, s in bands]},
         "classes": cls_rows,
@@ -218,7 +221,7 @@ def main() -> None:
     args.out.write_text(json.dumps(out, separators=(",", ":")))
     print(f"wrote {args.out}  frames={tot_frames:,} objects={tot_obj:,} poses={tot_pose:,}")
     for r in sub_rows.values():
-        print(f"  {r['name']:<11} objects={r['objects']:,} confident={r['confident']:,} poses={r['poses']:,} blocks={len(r['blocks'])}")
+        print(f"  {r['name']:<11} objects={r['objects']:,} confident={r['confident']:,} poses={r['poses']:,} setups={len(r['setups'])}")
 
 
 if __name__ == "__main__":

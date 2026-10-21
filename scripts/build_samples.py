@@ -3,7 +3,7 @@
 
     python scripts/build_samples.py --release /path/to/kat_release \
         --rgb-root /path/to/DATA --depth-root /path/to/DATA \
-        --models static/models 000500 002000 ...
+        --split-file splits/setups.csv --models static/models 000500 002000 ...
 
 For every stem it writes into static/samples/:
     <stem>.jpg         RGB, 1920x1080
@@ -25,7 +25,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageFilter
 
-from build_stats import assign_splits
+from build_stats import read_split_file
 
 FX, FY, CX, CY = 918.7635, 918.3555, 957.855, 552.21      # Azure Kinect colour camera @1920x1080
 W, H = 1920, 1080
@@ -147,6 +147,7 @@ def main():
     ap.add_argument("--release", type=Path, required=True, help="folder with KITchen_labels_<N>/")
     ap.add_argument("--rgb-root", type=Path, required=True)
     ap.add_argument("--depth-root", type=Path, required=True)
+    ap.add_argument("--split-file", type=Path, required=True, help="benchmark splits/setups.csv or its run list")
     ap.add_argument("--models", type=Path, default=REPO / "static" / "models")
     ap.add_argument("--out", type=Path, default=REPO / "static" / "samples")
     ap.add_argument("--json", type=Path, default=REPO / "data" / "explorer_frames.json")
@@ -156,14 +157,13 @@ def main():
     a.out.mkdir(parents=True, exist_ok=True)
 
     classes = [c for c in (a.release / "KITchen_labels_1" / "classes.txt").read_text().splitlines() if c.strip()]
-    gts, ignores, subsets, frames, cache = {}, {}, {}, [], {}
+    setups = read_split_file(a.split_file)
+    gts, ignores, frames, cache = {}, {}, [], {}
     for stem in a.stems:
         seq = seq_of(stem); lab = a.release / f"KITchen_labels_{seq}"
         if seq not in gts:
             gts[seq] = json.loads((lab / "scene_gt.json").read_text())
             ignores[seq] = json.loads((lab / "ignore.json").read_text())
-            stems = sorted(f.stem for f in (lab / "labels").glob("*.txt"))
-            subsets[seq] = assign_splits(stems, 250, 25, (0.7, 0.1, 0.2), 2026, str(seq))
         rows = [l.split() for l in (lab / "labels" / f"{stem}.txt").read_text().splitlines() if l.strip()]
         polys = [l.split() for l in (lab / "seg_labels" / f"{stem}.txt").read_text().splitlines() if l.strip()]
         bad = set(ignores[seq].get(stem, []))
@@ -201,7 +201,7 @@ def main():
                 used.add(best[1]); objs[best[1]]["pose"] = {"R": p["R"], "t": p["t"]}
         render_poses(poses, a.models, cache).save(a.out / f"{stem}_pose.png", optimize=True)
 
-        frames.append({"stem": stem, "seq": seq, "split": subsets[seq][stem], "depth_range_mm": [int(lo), int(hi)], "objects": objs})
+        frames.append({"stem": stem, "seq": seq, "split": setups[stem][1] if stem in setups else "buffer", "depth_range_mm": [int(lo), int(hi)], "objects": objs})
         print(f"{stem}: {len(objs)} objects, {len(poses)} poses", flush=True)
 
     a.json.parent.mkdir(parents=True, exist_ok=True)

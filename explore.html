@@ -230,7 +230,7 @@
       <div class="card-head">
         <div>
           <h3>Along the recordings</h3>
-          <p class="muted small">Average annotated objects per image in recording order (smoothed). The strip above shows the benchmark split of each 250-frame block.</p>
+          <p class="muted small">Average annotated objects per image in recording order (smoothed). The strip above shows the benchmark split: the lab room first, all train, then the built-in kitchen, split into validation and test by setup.</p>
         </div>
       </div>
       <div class="legend" id="split-legend"></div>
@@ -239,7 +239,7 @@
 
     <div class="card wide" id="splits">
       <h3>Benchmark splits</h3>
-      <p class="muted small">Consecutive frames are near-duplicates, so the benchmark assigns whole blocks of 250 frames to train, validation and test (70%, 10% and 20% of the blocks, fixed seed). The 25 train frames on each side of a validation or test block are left out so no near-duplicate crosses a split. Every 6th validation and test frame is scored.</p>
+      <p class="muted small">Train is the lab room; validation and test are the built-in kitchen, so test scores show how a method does in a room it has never seen. In the kitchen, each setup (one arrangement of objects, which comes back in many short clips) goes whole to validation or test, so no arrangement is in both. About 74%, 9% and 17% of the images are train, validation and test; a few clips are left out. Every validation and test frame is scored.</p>
       <div class="table-wrap">
         <table class="tbl" id="seq-table">
           <thead><tr><th>Split</th><th class="num">Objects</th><th class="num">Confident</th><th class="num">6D poses</th></tr></thead>
