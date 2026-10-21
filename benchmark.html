@@ -134,8 +134,8 @@ wrote results/my-method_pose_test.json  .md  .tex</span></code></pre>
 
   <div class="wrap">
     <dl class="kpis">
-      <div class="kpi"><dt>Test objects with 6D poses</dt><dd>63,258</dd></div>
-      <div class="kpi"><dt>Test objects with boxes and masks</dt><dd>74,424</dd></div>
+      <div class="kpi"><dt>Scored test poses</dt><dd>63,258</dd></div>
+      <div class="kpi"><dt>Scored test boxes and masks</dt><dd>74,424</dd></div>
       <div class="kpi"><dt>Object models scored</dt><dd>107</dd></div>
       <div class="kpi"><dt>Object classes</dt><dd>108</dd></div>
       <div class="kpi"><dt>Tasks</dt><dd>3</dd></div>
@@ -244,7 +244,7 @@ wrote results/my-method_pose_test.json  .md  .tex</span></code></pre>
       <ol class="steps">
         <li><div><h3>Get the benchmark</h3><p>Install the evaluator and download the v1.0 files. <code>verify</code> confirms your copy of the ground truth is the frozen one.</p></div></li>
         <li><div><h3>Train and tune</h3><p>Train on <code>train</code> and tune on <code>val</code>. No test frame or test annotation may be used.</p></div></li>
-        <li><div><h3>Predict on the test frames</h3><p>Run on the frames in <code>splits/test_eval.txt</code>: a COCO results file for detection and segmentation, a BOP CSV with the run time of each image for pose.</p></div></li>
+        <li><div><h3>Predict on the test frames</h3><p>Run on every test frame (<code>splits/test_eval.txt</code>): a COCO results file for detection and segmentation, a BOP CSV with the run time of each image for pose.</p></div></li>
         <li><div><h3>Score and submit</h3><p><code>validate</code> catches format mistakes, <code>eval</code> writes the result card with a ready-made table row for your paper. Open an issue on the benchmark repository with the card attached.</p></div></li>
       </ol>
       <div class="card code-card">
@@ -289,7 +289,7 @@ kitchenbench eval     kitchen_bench_v1.0 pose my_poses.csv --method method.json
         <ul class="ticks">
           <li><b>Train is one room, val and test another.</b> KITchen was recorded in an open lab room and in a built-in kitchen. Methods train in the lab room and are scored in the kitchen, a room they have never seen.</li>
           <li><b>Whole setups go to val or test.</b> A setup is one arrangement of objects, and it recurs across many short clips. Kitchen clips are grouped by arrangement (distances between objects seen together match to within a few centimetres), and each setup goes whole to val or test, so no arrangement is in both.</li>
-          <li><b>Every frame</b> of the validation and test sets is scored.</li>
+          <li><b>Every test frame is scored</b>, so a result covers every pose and box in the test split.</li>
           <li><b>The test ground truth is public</b> and the evaluator is frozen and versioned. New annotations always mean a new version.</li>
         </ul>
         <a class="btn" href="explore.html#splits">See the splits on the Explore page</a>
@@ -310,7 +310,7 @@ kitchenbench eval     kitchen_bench_v1.0 pose my_poses.csv --method method.json
         <h3>Benchmark files v1.0</h3>
         <p class="muted small">One archive with everything the evaluator needs. The images come from the dataset download.</p>
         <ul class="ticks">
-          <li><b>Splits</b> train, validation and test frame lists, plus the scored test frames</li>
+          <li><b>Splits</b> train, validation and test frame lists, and the setup of every frame</li>
           <li><b>2D ground truth</b> COCO files with boxes, masks and ignore regions</li>
           <li><b>6D ground truth</b> BOP files with poses and the pairs left out of scoring</li>
           <li><b>Evaluation models</b> with their symmetries</li>
