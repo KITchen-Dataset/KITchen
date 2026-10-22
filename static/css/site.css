@@ -117,8 +117,8 @@ h1, h2, h3 { font-family: var(--display); line-height: 1.12; margin: 0; letter-s
 .hero-visual figcaption { margin-top: 10px; font-size: .82rem; color: var(--text-3); font-family: var(--mono); }
 
 .kpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px; margin: 56px 0 0; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-.kpi { background: var(--surface); padding: 20px 22px; }
-.kpi dt { font-size: .8rem; color: var(--text-3); font-weight: 500; }
+.kpi { background: var(--surface); padding: 20px 22px; display: flex; flex-direction: column; }
+.kpi dt { flex: 1 0 auto; font-size: .8rem; color: var(--text-3); font-weight: 500; }
 .kpi dd { margin: 4px 0 0; font-family: var(--display); font-size: 1.75rem; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
 
 /* ── Sections ── */
