@@ -78,7 +78,7 @@
   <div class="wrap">
     <dl class="kpis" id="kpis">
       <div class="kpi"><dt>Annotated objects</dt><dd data-k="objects">3,034,854</dd></div>
-      <div class="kpi" title="Labels confirmed by a second detector"><dt>Confident labels</dt><dd data-k="confident">2,901,857</dd></div>
+      <div class="kpi" title="Confirmed labels; the rest are listed in ignore.json"><dt>Confident labels</dt><dd data-k="confident">2,901,857</dd></div>
       <div class="kpi"><dt>6D poses</dt><dd data-k="poses">2,586,235</dd></div>
       <div class="kpi"><dt>Object models</dt><dd>111</dd></div>
       <div class="kpi"><dt>Objects per image</dt><dd data-k="objects_per_frame_mean">31.7</dd></div>
@@ -270,7 +270,7 @@
           <li><b>Instance masks</b> one binary PNG per object, plus polygons</li>
           <li><b>6D poses</b> BOP-style <code>scene_gt.json</code> per part</li>
           <li><b>3D models</b> 111 textured meshes (<code>obj_XXXXXX.ply</code>)</li>
-          <li><b>Confidence</b> <code>ignore.json</code> flags the ~4% of 2D labels not confirmed by a second detector (kept, but outside the confident set)</li>
+          <li><b>Confidence</b> <code>ignore.json</code> lists the ~4% of 2D labels that are unconfirmed (kept, but outside the confident set)</li>
         </ul>
         <a class="btn btn-primary" href="https://drive.google.com/drive/folders/1K38tgvQN_yl9MOdF1MlKL9oJVHQyFkyC?usp=drive_link">Open the dataset folder</a>
       </div>
