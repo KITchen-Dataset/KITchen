@@ -118,6 +118,10 @@ pip install "git+https://github.com/KITchen-Dataset/KITchenBenchmark@v1.0"
 
 See https://github.com/KITchen-Dataset/KITchenBenchmark for the splits, metrics and evaluation.
 
+## License
+
+The KITchen dataset (images, depth, annotations, 6D poses and 3D models) is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). You may use, share and adapt it, also commercially, as long as you cite the paper below and release adapted data under the same license.
+
 ## Citation
 
 ```bibtex
