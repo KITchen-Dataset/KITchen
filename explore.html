@@ -295,6 +295,41 @@ for i, row in enumerate(rows):
     print(classes[cls], (cx, cy, w, h), mask.shape)</code></pre>
       </div>
     </div>
+    <div class="grid-2 align-start" id="format">
+      <div class="card code-card">
+        <div class="code-head"><span>Files of part N (1 to 4)</span></div>
+<pre><code>KITchen_rgb_&lt;N&gt;/images/&lt;stem&gt;.png    RGB image, 1920×1080
+KITchen_labels_&lt;N&gt;/
+  classes.txt               line k (from 0) is class k
+  labels/&lt;stem&gt;.txt         boxes: class cx cy w h, normalised
+  seg_labels/&lt;stem&gt;.txt     instance polygons, same row order
+  masks/&lt;stem&gt;_obj0000.png  binary mask of object 0, 1, …
+  ignore.json               {stem: [unconfirmed rows]}
+  scene_gt.json             6D poses, BOP style
+depth archives              &lt;stem&gt;.png, aligned to RGB</code></pre>
+      </div>
+      <div class="card code-card">
+        <div class="code-head"><span>poses.py</span><button class="copy" type="button" data-copy="code-pose">Copy</button></div>
+<pre id="code-pose"><code>import json
+import numpy as np
+from pathlib import Path
+
+# {stem: [{"obj_id", "cam_R_m2c", "cam_t_m2c"}, ...]}
+gt = json.loads(Path("KITchen_labels_1/scene_gt.json").read_text())
+
+# colour camera intrinsics, 1920×1080
+K = np.array([[918.7635, 0.0, 957.855],
+              [0.0, 918.3555, 552.21],
+              [0.0, 0.0, 1.0]])
+
+for p in gt.get("000000", []):
+    R = np.array(p["cam_R_m2c"]).reshape(3, 3)  # model to camera
+    t = np.array(p["cam_t_m2c"]) / 1000.0       # mm to metres
+    mesh = f"obj_{p['obj_id']:06d}.ply"         # id from classes.txt
+    print(mesh, R, t)</code></pre>
+      </div>
+    </div>
+    <p class="muted small">Poses are listed only where they were accepted, so some labelled objects have no entry in <code>scene_gt.json</code>. Class 0 ("other") has no 3D model.</p>
   </div>
 </section>
 
