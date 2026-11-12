@@ -1,5 +1,7 @@
 # KITchen
 
+![KITchen images with their 2D boxes, instance masks, contours and 6D poses](static/images/web/annotation_7.jpg)
+
 KITchen is a real-world RGB-D dataset and benchmark for 6D object pose estimation in kitchen environments. It was recorded with the head camera of the ARMAR humanoid robot in two kitchen rooms, with objects on shelves and counters, in sinks, dishwashers and more.
 
 - Website: https://kitchen-dataset.github.io/KITchen/
